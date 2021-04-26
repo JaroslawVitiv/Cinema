@@ -13,9 +13,7 @@ public class UniqueUsernameValidator implements ConstraintValidator<UniqueUserna
 	
 	@Override
 	public boolean isValid(String email, ConstraintValidatorContext context) {
-		if(userRepository == null)
-			return true;
-		return userRepository.findByEmail(email) == null;
+		return !userRepository.findByEmail(email).isPresent();
 	}
 	
 
