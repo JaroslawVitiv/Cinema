@@ -1,30 +1,23 @@
 package com.busvancar.spring.cinema.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import javax.validation.Valid;
-
-import org.springframework.http.ResponseEntity;
-
 import com.busvancar.spring.cinema.dto.MovieDto;
-import com.busvancar.spring.cinema.dto.UserDto;
 import com.busvancar.spring.cinema.model.Movie;
 
 public interface MovieService {
 
-	List<Movie> listAllMovies();
+	public List<Movie> listAllMovies();
 
-	MovieDto getMovie(int id);
+	public MovieDto getMovie(Integer id);
 
-	MovieDto insertMovie(MovieDto movieDto);
+	public MovieDto insertMovie(MovieDto movieDto);
 	
-	MovieDto createMovie(MovieDto movieDto);
+	public void removeMovie(Integer id);
 
+	public MovieDto updateMovie(Integer id, MovieDto movieDto);
 
-	MovieDto updateMovie(int id, MovieDto movieDto);
-
-	void removeMovie(int id);
+	public MovieDto saveOrUpdate(Integer id, MovieDto movieDto);
 
 
 }

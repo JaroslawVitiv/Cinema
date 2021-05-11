@@ -5,9 +5,12 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.busvancar.spring.cinema.dto.MovieDto;
 import com.busvancar.spring.cinema.dto.MovieSessionDto;
 import com.busvancar.spring.cinema.dto.UserDto;
 import com.busvancar.spring.cinema.model.MovieSession;
@@ -28,42 +32,53 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/movies/sessions")
-@RequiredArgsConstructor
+@EnableAutoConfiguration
+@RequestMapping("/sessions")
 public class MovieSessionController {
 
-	private final MovieSessionService msService;
+	@Autowired
+	MovieSessionService msService;
 
 	@ResponseStatus(HttpStatus.CREATED)
-	@PostMapping
+	@PostMapping("/post")
 	public MovieSessionDto insertMovieSession(@Valid @RequestBody MovieSessionDto msDto) {
-		log.info("Create movie session: {}", msDto);
-		return msService.insertMovieSession(msDto);
+		log.info("Create movie session: {}", msDto.toString());
+		msService.insertMovieSession(msDto);
+		return msDto;
 	}
 
 	@ResponseStatus(HttpStatus.OK)
-	@GetMapping(value = "/fromMovie/{movieId}")
-	public List<MovieSession> getAllMovieSessions(int movieId) {
-		List<MovieSession> listMovieSessions = msService.getAllMovieSessions(movieId);
-		return listMovieSessions;
+	@GetMapping(value = "/list/{movieId}")
+	public List<MovieSession> getAllMovieSessions(@PathVariable Integer movieId) {
+		log.info("Get movie session by movieId - {}", movieId);
+		return msService.getAllMovieSessions(movieId);
 	}
+	
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping(value = "/id/{id}")
+	public MovieSessionDto getMovieSession(@PathVariable Integer id) {
+		log.info("Get movie session by sessionID - {}", id);
+		return msService.getMovieSession(id);
+	}
+	
 
-	@RequestMapping(value = "/{sessionID}", method = RequestMethod.DELETE)
-	public ResponseEntity<Void> removeMovieSession(@PathVariable int sessionID) {
-		msService.removeMovieSession(sessionID);
-		return ResponseEntity.noContent().build();
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+	public void removeMovieSession(@PathVariable Integer id) {
+		log.info("Deleting movie: {}", msService.toString());
+		msService.removeMovieSession(id);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
-	@GetMapping(value = "/price/{sessionID}")
-	public int getMovieSessionBasePrice(@PathVariable int sessionID) {
-		return msService.getMovieSessionBasePrice(sessionID);
+	@GetMapping(value = "/price/{id}")
+	public int getMovieSessionBasePrice(@PathVariable Integer id) {
+		return msService.getMovieSessionBasePrice(id);
 	}
 
+	
+
 	@ResponseStatus(HttpStatus.OK)
-	@PutMapping(value = "/update/{sessionID}/{availableSeats}")
-	public void updateMovieSessionAvailableSeats(int movieSession, int availableSeats) {
+	@PatchMapping("/update/{movieSession}/{availableSeats}")
+	public void updateMovieSessionAvailableSeats(@PathVariable Integer movieSession, @PathVariable Integer availableSeats) {
 		msService.updateMovieSessionAvailableSeats(movieSession, availableSeats);
 	}
-
 }

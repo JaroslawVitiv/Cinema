@@ -17,19 +17,11 @@ import lombok.Data;
 @JsonInclude(Include.NON_NULL)
 public class MovieSessionDto {
 	
-	private int sessionId;
+	private int id;
 	private int movieId;
-	private double price;
+	private int price;
 	private Timestamp dateTime;
-	private String moviePoster;
-	@NotNull
-	@NotEmpty
-	private String movieTitle;
-	private String movieDescriptionEn;
-	private String movieDescriptionUa;
-	private int movieDuration;
-	private String movieGenre;
-	private String movieGenreUa;
 	private int availableSeats;
+	
 
 }

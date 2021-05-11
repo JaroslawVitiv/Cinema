@@ -6,14 +6,14 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object>{
-    private String firstFieldName;
-    private String secondFieldName;
+    private String password;
+    private String confirmPassword;
 
     @Override
     public void initialize(final FieldMatch constraintAnnotation)
     {
-        firstFieldName = constraintAnnotation.first();
-        secondFieldName = constraintAnnotation.second();
+    	password = constraintAnnotation.first();
+    	confirmPassword = constraintAnnotation.second();
     }
 
     @Override
@@ -21,8 +21,8 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
     {
         try
         {
-            final Object firstObj = BeanUtils.getProperty(value, firstFieldName);
-            final Object secondObj = BeanUtils.getProperty(value, secondFieldName);
+            final Object firstObj = BeanUtils.getProperty(value, password);
+            final Object secondObj = BeanUtils.getProperty(value, confirmPassword);
 
             return firstObj == null && secondObj == null || firstObj != null && firstObj.equals(secondObj);
         }

@@ -2,15 +2,23 @@ package com.busvancar.spring.cinema.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.busvancar.spring.cinema.model.Movie;
 import com.busvancar.spring.cinema.model.Ticket;
 import com.busvancar.spring.cinema.model.User;
 
-public interface TicketRepository {
+@Repository
+public interface TicketRepository  extends JpaRepository<Ticket, Integer> {
 
+	Optional<Ticket> findBySeatAndSessionId(Integer seat, Integer sessionId);
+
+
+	/*
 	Ticket getTicket(int seat, int sessionId);
-
-	Ticket createTicket(Ticket ticket);
 
 	void removeTicket(int seat, int sessionId, int purchaserId, String sessionToken);
 
@@ -36,10 +44,10 @@ public interface TicketRepository {
 
 	Ticket getTicket(int ticketId, String sessionToken);
 
-	Ticket getTicket(int ticketId);
-
 	List<Ticket> getAllTicketsList(int purchaserID);
 
+	List<Ticket> getAllTickets();
+*/
 
 	
 }

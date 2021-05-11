@@ -34,4 +34,10 @@ public class CinemaApplication {
 		SpringApplication.run(CinemaApplication.class, args);
 	}
 
+	public void run(String...args) throws Exception{
+		//getUsersInfoByLastName();
+		System.out.print("getUsersInfoByLastName()");
+	}
+
+	
 }

@@ -15,22 +15,21 @@ import lombok.Data;
 
 @Data
 @Builder
-@JsonInclude(Include.NON_NULL)
+@JsonInclude
 public class TicketDto {
 	
 	private int ticketId;
 	private int seat;
 	private int sessionId;
-	private double price;
+	private int price;
 	private String genre;
 	private int purchaserId;
 	private String sessionToken;
 	private Timestamp time;
-	@NotNull
-	@NotEmpty
+	/*
 	private String movieTitle;
 	private int movieDuration;
 	private Timestamp movieSessionTime;
 	private int row;
-	
+	*/
 }

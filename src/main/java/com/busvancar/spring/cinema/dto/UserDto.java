@@ -29,7 +29,6 @@ public class UserDto {
 	private String lastName;
 	@NotNull 	
 	@Email
-	@Column(unique = true)
     private String email;
 	@NotNull
 	@NotEmpty

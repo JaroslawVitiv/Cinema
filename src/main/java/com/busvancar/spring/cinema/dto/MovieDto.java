@@ -17,12 +17,12 @@ import lombok.Data;
 
 @Data
 @Builder
-///@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_NULL)
 public class MovieDto {
 	
 	private int id;
-	///@NotNull
-	///@NotEmpty
+	@NotNull
+	@NotEmpty
 	private String title;
 	private String descriptionUa;
 	private String descriptionEn;
@@ -33,7 +33,8 @@ public class MovieDto {
 	private String poster;
 	private double price;
 	
-    private Map<String, MovieSession> movieSessions = new HashMap<>();
+	
+///    private Map<String, MovieSession> movieSessions = new HashMap<>();
 
 	
 	

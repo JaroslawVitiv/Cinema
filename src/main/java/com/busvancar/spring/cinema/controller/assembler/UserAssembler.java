@@ -19,6 +19,7 @@ public class UserAssembler extends RepresentationModelAssemblerSupport<UserDto, 
 	@Override
 	public UserModel toModel(UserDto entity) {
 		UserModel userModel = new UserModel(entity);
+		
 		Link findUser = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).findUser(entity.getEmail())).withRel("findUser");
 		Link deleteUser = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).deleteUser(entity.getEmail())).withRel("deleteUser");
 

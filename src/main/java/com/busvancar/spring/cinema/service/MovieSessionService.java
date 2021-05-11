@@ -9,21 +9,21 @@ import com.busvancar.spring.cinema.model.MovieSession;
 
 public interface MovieSessionService {
 	
-	int ROWS = 12;
+	public Integer ROWS = 12;
 
-	List<MovieSession> getAllMovieSessions(int movieId);
+	public List<MovieSession> getAllMovieSessions(Integer movieId);
 
-	MovieSessionDto getMovieSession(int sessionID);
+	public MovieSessionDto getMovieSession(Integer id);
 
-	MovieSessionDto insertMovieSession(@Valid MovieSessionDto msDto);
+	public MovieSessionDto insertMovieSession(@Valid MovieSessionDto msDto);
 
-	void removeMovieSession(int sessionID);
+	public void removeMovieSession(Integer id);
 
-	int getMovieSessionBasePrice(int sessionID);
+	public Integer getMovieSessionBasePrice(Integer id);
 
-	double getPrice(int movieSessionBasePrice, int seat);
+	//public Integer getPrice(Integer movieSessionBasePrice, Integer seat);
 
-	void updateMovieSessionAvailableSeats(int movieSession, int availableSeats);
+	public void updateMovieSessionAvailableSeats(Integer movieSession, Integer availableSeats);
 
 
 }

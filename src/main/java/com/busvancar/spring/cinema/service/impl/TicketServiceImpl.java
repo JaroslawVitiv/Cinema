@@ -3,14 +3,19 @@ package com.busvancar.spring.cinema.service.impl;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.busvancar.spring.cinema.dto.MovieDto;
 import com.busvancar.spring.cinema.dto.TicketDto;
+import com.busvancar.spring.cinema.exception.MovieNotFoundException;
+import com.busvancar.spring.cinema.exception.TicketNotFoundException;
 import com.busvancar.spring.cinema.model.Movie;
 import com.busvancar.spring.cinema.model.Ticket;
 import com.busvancar.spring.cinema.model.User;
@@ -23,78 +28,59 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service 
-@RequiredArgsConstructor
+@Service
+@Transactional
 public class TicketServiceImpl implements TicketService{
-	
-	private final TicketRepository ticketRepository;
-	
-	/*
+
+	@Resource
+	TicketRepository ticketRepository;
+
 	@Override
-	public List<Movie> listAllMovies(){
-        List<Movie> listMovies = movieRepository.listAllMovies();
-        return listMovies;
+	public TicketDto getTicket(Integer seat, Integer sessionId) {
+		HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");    
+		log.info("Get Ticket by seat - {} and session id - {} ", seat, sessionId);
+		Ticket ticket = ticketRepository.findBySeatAndSessionId(seat, sessionId)
+				.orElseThrow(TicketNotFoundException::new);
+		System.out.print("userFound:"+ticket.toString());
+		return mapTicket2TicketDto(ticket);	
 	}
 	
 	@Override
-	public MovieDto updateMovie(int id, MovieDto movieDto) {
-		Movie movie = mapMovieDtoToMovie(movieDto);
-		movie = movieRepository.updateMovie(id, movie);
-		return mapMovieToMovieDto(movie);
-	}	
-
-	@Override
-	public MovieDto getMovie(int id) {
-		log.info("getMovie by id: movie - {}", id);
-		Movie movie = movieRepository.getMovie(id);
-		return mapMovieToMovieDto(movie);
-	}
-
-	@Override
-	public MovieDto insertMovie(MovieDto movieDto) {
-		Movie movie = mapMovieDtoToMovie(movieDto);
-		movie = movieRepository.insertMovie(movie);
-		return mapMovieToMovieDto(movie);
-	}
-
-	@Override
-	public void removeMovie(int id) {
-		movieRepository.removeMovie(id);
-	}
-*/
-
-	private TicketDto mapTicket2TicketDto(Ticket ticket) {
-		return TicketDto.builder()
-				.ticketId(ticket.getTicketId())
-				.sessionId(ticket.getSessionId())
-				.price(ticket.getPrice())
-				.genre(ticket.getGenre())
-				.purchaserId(ticket.getPurchaserId())
-				.sessionToken(ticket.getSessionToken())
-				.time(ticket.getTime())
-				.movieTitle(ticket.getMovieTitle())
-				.movieDuration(ticket.getMovieDuration())
-				.movieSessionTime(ticket.getMovieSessionTime())
-				.row(ticket.getRow())
-				.build();
+	public TicketDto createTicket(@Valid TicketDto tDto) {
 		
-	}	
-	
-	private Ticket mapTicketDto2Ticket(TicketDto ticketDto) {
-		return Ticket.builder()
-				.ticketId(ticketDto.getTicketId())
-				.sessionId(ticketDto.getSessionId())
-				.price(ticketDto.getPrice())
-				.genre(ticketDto.getGenre())
-				.purchaserId(ticketDto.getPurchaserId())
-				.sessionToken(ticketDto.getSessionToken())
-				.time(ticketDto.getTime())
-				.movieTitle(ticketDto.getMovieTitle())
-				.movieDuration(ticketDto.getMovieDuration())
-				.movieSessionTime(ticketDto.getMovieSessionTime())
-				.row(ticketDto.getRow())
-				.build();
+		log.info("Insert created ticket in db - {}", tDto.getTicketId());
+
+		Ticket ticket = mapTicketDto2Ticket(tDto);
+		if(!ticketRepository.findById(tDto.getTicketId()).isPresent()) {
+			ticket = ticketRepository.save(ticket);
+		}			
+		return mapTicket2TicketDto(ticket);
 	}
+	
+	
+
+	@Override
+	public void removeTicket(Integer sessionId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	
+	@Override
+	public List<Ticket> getAllTicketsList() {
+		log.info("getAllTickets");
+		return (List<Ticket>) ticketRepository.findAll();
+	}
+/*	
+	
+
+	
+	
+	
+	
+	
 
 	@Override
 	public TicketDto getTicket(int seat, int sessionId) {
@@ -103,13 +89,7 @@ public class TicketServiceImpl implements TicketService{
 		return mapTicket2TicketDto(ticket);
 	}
 
-	@Override
-	public TicketDto createTicket(@Valid TicketDto tDto) {
-		
-		Ticket ticket = mapTicketDto2Ticket(tDto);
-		ticket = ticketRepository.createTicket(ticket);
-		return mapTicket2TicketDto(ticket);
-	}
+	
 
 	@Override
 	public void removeTicket(int seat, int sessionId, int purchaserId, String sessionToken) {
@@ -180,10 +160,46 @@ public class TicketServiceImpl implements TicketService{
 		return ticketRepository.getAllTicketsList(purchaserID) ;
 	}
 
-	@Override
-	public TicketDto getTicket(int ticketId) {
-		Ticket ticket = ticketRepository.getTicket(ticketId);
-		return mapTicket2TicketDto(ticket);
-	}
+	
 
+	
+	
+	
+	
+*/
+	
+	private TicketDto mapTicket2TicketDto(Ticket ticket) {
+		return TicketDto.builder()
+				.ticketId(ticket.getTicketId())
+				.sessionId(ticket.getSessionId())
+				.price(ticket.getPrice())
+				.genre(ticket.getGenre())
+				.purchaserId(ticket.getPurchaserId())
+				.sessionToken(ticket.getSessionToken())
+				.time(ticket.getTime())
+				.seat(ticket.getSeat())
+				//.movieTitle(ticket.getMovieTitle())
+				//.movieDuration(ticket.getMovieDuration())
+				//.movieSessionTime(ticket.getMovieSessionTime())
+				//.row(ticket.getRow())
+				.build();
+		
+	}	
+	
+	private Ticket mapTicketDto2Ticket(TicketDto ticketDto) {
+		return Ticket.builder()
+				.ticketId(ticketDto.getTicketId())
+				.sessionId(ticketDto.getSessionId())
+				.price(ticketDto.getPrice())
+				.genre(ticketDto.getGenre())
+				.purchaserId(ticketDto.getPurchaserId())
+				.sessionToken(ticketDto.getSessionToken())
+				.time(ticketDto.getTime())
+				.seat(ticketDto.getSeat())
+				//.movieTitle(ticketDto.getMovieTitle())
+				//.movieDuration(ticketDto.getMovieDuration())
+				//.movieSessionTime(ticketDto.getMovieSessionTime())
+				//.row(ticketDto.getRow())
+				.build();
+	}
 }

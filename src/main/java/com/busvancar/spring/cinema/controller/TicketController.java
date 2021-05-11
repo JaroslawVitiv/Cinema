@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,20 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/tickets")
-@RequiredArgsConstructor
+@EnableAutoConfiguration
+@RequestMapping(value = "/tickets")
 public class TicketController {
 
-	private final TicketService ticketService;
-
+	@Autowired
+	TicketService ticketService;
+	
 	@ResponseStatus(HttpStatus.OK)
-	@GetMapping(value = "/{seat}/{sessionId}")
-	public boolean isCreated(@PathVariable int seat, @PathVariable int sessionId) {
-		TicketDto tDto = null;
-		tDto = ticketService.getTicket(seat, sessionId);
-		boolean isCreated = (tDto != null);
-		log.info("Ticket is created: {}", isCreated);
-		return isCreated;
+	@GetMapping(value = "/get/{seat}/{sessionId}")
+	public TicketDto getTicket(@PathVariable Integer seat, @PathVariable Integer sessionId) {
+		return ticketService.getTicket(seat, sessionId);
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)
@@ -48,19 +47,46 @@ public class TicketController {
 	}
 
 	@RequestMapping(value = "/{seat}/{sessionId}/{purchaserId}/{sessionToken}", method = RequestMethod.DELETE)
-	public ResponseEntity<Void> removeTicket(@PathVariable int seat, @PathVariable int sessionId,
-			@PathVariable int purchaserId, @PathVariable String sessionToken) {
-		ticketService.removeTicket(seat, sessionId, purchaserId, sessionToken);
+	//public ResponseEntity<Void> removeTicket(@PathVariable int seat, @PathVariable int sessionId, @PathVariable int purchaserId, @PathVariable String sessionToken) {
+	public ResponseEntity<Void> removeTicket(@PathVariable int sessionId) {
+		ticketService.removeTicket(sessionId);
 		return ResponseEntity.noContent().build();
 	}
 
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping(value = "/all")
+	public List<Ticket> getAllTicketsList() {
+		return ticketService.getAllTicketsList();
+	}
+	
+	
+	
+	
+	
+	/*
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping(value = "/all/purchaser/{purchaserId}")
+	public List<Ticket> getAllTicketsList(int purchaserID) {
+		return ticketService.getAllTicketsList(purchaserID);
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping(value = "/{seat}/{sessionId}")
+	public boolean isCreated(@PathVariable int seat, @PathVariable int sessionId) {
+		TicketDto tDto = null;
+		tDto = ticketService.getTicket(seat, sessionId);
+		boolean isCreated = (tDto != null);
+		log.info("Ticket is created: {}", isCreated);
+		return isCreated;
+	}
+	
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(value = "/session/{sessionId}")
 	public Ticket[] getAllTickets(@PathVariable int sessionId) {
 		Ticket[] tickets = ticketService.getAllTickets(sessionId);
 		return tickets;
 	}
-
+	
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(value = "/count/{sessionToken}")
 	public int getTicketCount(@PathVariable String sessionToken) {
@@ -109,15 +135,6 @@ public class TicketController {
 		return ticketService.getBookedSeats(sessionID);
 	}
 
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping(value = "/all/purchaser/{purchaserId}")
-	public List<Ticket> getAllTicketsList(int purchaserID) {
-		return ticketService.getAllTicketsList(purchaserID);
-	}
-
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping(value = "/{ticketId}")
-	public TicketDto getTicket(@PathVariable int ticketId) {
-		return ticketService.getTicket(ticketId);
-	}
+*/
+	
 }

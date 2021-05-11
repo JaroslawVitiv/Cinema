@@ -10,33 +10,40 @@ import com.busvancar.spring.cinema.model.User;
 
 public interface TicketService {
 
-	TicketDto getTicket(int seat, int sessionId);
+	TicketDto getTicket(Integer seat, Integer sessionId);
 
 	TicketDto createTicket(@Valid TicketDto tDto);
 
-	void removeTicket(int seat, int sessionId, int purchaserId, String sessionToken);
+	void removeTicket(Integer sessionId);
 
-	Ticket[] getAllTickets(int sessionId);
+	List<Ticket> getAllTicketsList();
 
-	int getTicketCount(String sessionToken);
 
-	List<Ticket> getBookedUnpaidTickets(String sessionToken);
+	//TicketDto getTicket(int seat, int sessionId);
 
-	void removeFromInvoice(int ticketId, String sessionToken);
+	//void removeTicket(int seat, int sessionId, int purchaserId, String sessionToken);
 
-	void purgeAllUnpaidTickets(String sessionToken);
+	//Ticket[] getAllTickets(int sessionId);
 
-	boolean setUserId2pay(int purchaserId, String sessionToken);
+	//int getTicketCount(String sessionToken);
 
-	void clearAllUnpaid();
+	//List<Ticket> getBookedUnpaidTickets(String sessionToken);
 
-	int getBookedSeats(int sessionID);
+	//void removeFromInvoice(int ticketId, String sessionToken);
 
-	List<Ticket> getAllTicketsList(int purchaserID);
+	//void purgeAllUnpaidTickets(String sessionToken);
 
-	TicketDto getTicket(int ticketId);
+	//boolean setUserId2pay(int purchaserId, String sessionToken);
 
-	double getTodaysSum(int purchaserId, String sessionToken);
+	//void clearAllUnpaid();
+
+	//int getBookedSeats(int sessionID);
+
+	//List<Ticket> getAllTicketsList(int purchaserID);
+
+	//double getTodaysSum(int purchaserId, String sessionToken);
+
+
 
 	
 }

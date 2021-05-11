@@ -2,54 +2,93 @@ package com.busvancar.spring.cinema.service.impl;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.busvancar.spring.cinema.dto.MovieSessionDto;
+import com.busvancar.spring.cinema.model.Movie;
 import com.busvancar.spring.cinema.model.MovieSession;
 import com.busvancar.spring.cinema.repository.MovieSessionRepository;
 import com.busvancar.spring.cinema.service.MovieSessionService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service 
-@RequiredArgsConstructor
+@Transactional
 public class MovieSessionServiceImpl implements MovieSessionService{
 	
-	private final MovieSessionRepository msRepository;
+	@Resource
+	MovieSessionRepository msRepository;
 	
 	@Override
-	public List<MovieSession> getAllMovieSessions(int movieId){
-        List<MovieSession> listMovieSessions = msRepository.getAllMovieSessions(movieId);
-        return listMovieSessions;
+	public List<MovieSession> getAllMovieSessions(Integer movieId) {
+		 log.info("Get list of movie sessions by movieIDb - {}", movieId);
+		 Integer movieIdentificator[] = { movieId };
+
+		 Iterable<Integer> iterable = Arrays.asList(movieIdentificator);
+		 
+		return (List<MovieSession>) msRepository
+				.findAll()
+				.stream()
+				.filter(ms -> ms.getMovieId() == movieId)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public MovieSessionDto getMovieSession(Integer id) {
+		log.info("Get MovieSession by sessionID: {}", id);
+		MovieSession ms = msRepository.findById(id).get();
+		return mapMovieSession2MovieSessionDto(ms);
+	}
+	
+	
+		
+		
+	
+	@Override
+	public MovieSessionDto insertMovieSession(@Valid MovieSessionDto msDto) {
+		 log.info("Insert created movie session in db - {}", msDto);
+
+			MovieSession movieSession = mapMovieSessionDto2MovieSession(msDto);
+			if(!msRepository.findById((int) msDto.getId()).isPresent()) {
+				movieSession = msRepository.save(movieSession);
+			}			
+			return mapMovieSession2MovieSessionDto(movieSession);
 	}
 	
 	@Override
-	public MovieSessionDto insertMovieSession(MovieSessionDto msDto) {
-		MovieSession ms = mapMSDto2MS(msDto);
-		ms = msRepository.insertMovieSession(ms);
-		return mapMS2MSDto(ms);
-	}	
+	public void removeMovieSession(Integer id) {
+		msRepository.deleteById(id);
+	}
+
+	
+		
+	@Override
+	public Integer getMovieSessionBasePrice(Integer id) {
+		log.info("getMovieSessionBasePrice by sessionID: movie session - {}", id);
+		return getMovieSession(id).getPrice();
+	}
+
+	
+	
 	
 	@Override
-	public MovieSessionDto getMovieSession(int sessionID) {
-		log.info("getMovieSession by sessionID: movie session - {}", sessionID);
-		MovieSession ms = msRepository.getMovieSession(sessionID);
-		return mapMS2MSDto(ms);
+	public void updateMovieSessionAvailableSeats(Integer movieSession, Integer availableSeats) {
+		log.info("Update movie session: {} with a new number of available seats {}", movieSession, availableSeats );
+		MovieSession ms = msRepository.findById(movieSession).get();
+		ms.setAvailableSeats(availableSeats);
+		msRepository.save(ms);		
 	}
+
+	/*
 	
-	@Override
-	public void removeMovieSession(int sessionID) {
-		msRepository.removeMovieSession(sessionID);
-	}
-	
-	@Override
-	public int getMovieSessionBasePrice(int sessionID) {
-		log.info("getMovieSessionBasePrice by sessionID: movie session - {}", sessionID);
-		return (int) getMovieSession(sessionID).getPrice();
-	}
 	
 	@Override
 	public double getPrice(int movieSessionBasePrice, int seat) {
@@ -66,48 +105,47 @@ public class MovieSessionServiceImpl implements MovieSessionService{
 		return Double.parseDouble(df.format(movieSessionBasePrice * priceIncrementRate / 100));
 	}
 
-	@Override
-	public void updateMovieSessionAvailableSeats(int movieSession, int availableSeats) {
-		msRepository.updateMovieSessionAvailableSeats(movieSession, availableSeats);		
-	}
 	
-	private MovieSessionDto mapMS2MSDto(MovieSession ms) {
+	*/
+	
+	private MovieSessionDto mapMovieSession2MovieSessionDto(MovieSession ms) {
 		return MovieSessionDto.builder()
-				.sessionId(ms.getSessionId())
+				.id(ms.getId())
 				.movieId(ms.getMovieId())
 				.price(ms.getPrice())
 				.dateTime(ms.getDateTime())
-				.moviePoster(ms.getMoviePoster())
-				.movieTitle(ms.getMovieTitle())
-				.movieDescriptionEn(ms.getMovieDescriptionEn())
-				.movieDescriptionUa(ms.getMovieDescriptionUa())
-				.movieDuration(ms.getMovieDuration())
-				.movieGenre(ms.getMovieGenre())
-				.movieGenreUa(ms.getMovieGenreUa())
+				//.moviePoster(ms.getMoviePoster())
+				//.movieTitle(ms.getMovieTitle())
+				//.movieDescriptionEn(ms.getMovieDescriptionEn())
+				//.movieDescriptionUa(ms.getMovieDescriptionUa())
+				//.movieDuration(ms.getMovieDuration())
+				//.movieGenre(ms.getMovieGenre())
+				//.movieGenreUa(ms.getMovieGenreUa())
 				.availableSeats(ms.getAvailableSeats())
 				.build();
 		
 	}	
 	
-	private MovieSession mapMSDto2MS(MovieSessionDto msDto) {
+	private MovieSession mapMovieSessionDto2MovieSession(MovieSessionDto msDto) {
 		return MovieSession.builder()
-				.sessionId(msDto.getSessionId())
+				.id(msDto.getId())
 				.movieId(msDto.getMovieId())
 				.price(msDto.getPrice())
 				.dateTime(msDto.getDateTime())
-				.moviePoster(msDto.getMoviePoster())
-				.movieTitle(msDto.getMovieTitle())
-				.movieDescriptionEn(msDto.getMovieDescriptionEn())
-				.movieDescriptionUa(msDto.getMovieDescriptionUa())
-				.movieDuration(msDto.getMovieDuration())
-				.movieGenre(msDto.getMovieGenre())
-				.movieGenreUa(msDto.getMovieGenreUa())
+				//.moviePoster(msDto.getMoviePoster())
+				//.movieTitle(msDto.getMovieTitle())
+				//.movieDescriptionEn(msDto.getMovieDescriptionEn())
+				//.movieDescriptionUa(msDto.getMovieDescriptionUa())
+				//.movieDuration(msDto.getMovieDuration())
+				//.movieGenre(msDto.getMovieGenre())
+				//.movieGenreUa(msDto.getMovieGenreUa())
 				.availableSeats(msDto.getAvailableSeats())
 				.build();
 	}
 
 	
 
+	
 	
 
 }
